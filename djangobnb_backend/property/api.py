@@ -5,7 +5,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from .forms import PropertyForm
 from .models import Property, Reservation
 from .serializers import PropertiesListSerializer, PropertiesDetailSerializer, ReservationsListSerializer
-from django.contrib.auth.models import User
+from useraccount.models import User
 
 @api_view(['GET'])
 @authentication_classes([])
@@ -23,16 +23,19 @@ def properties_list(request):
     favorites = []
     properties = Property.objects.all()
 
+    is_favorites = request.GET.get('is_favorites', '')
     landlord_id = request.GET.get('landlord_id', '')
 
     if landlord_id:
         properties = properties.filter(landlord_id=landlord_id)
 
+    if is_favorites:
+        properties = properties.filter(favorited__in=[user])
+
     if user:
         for property in properties:
             if user in property.favorited.all():
                 favorites.append(property.id)
-
     serializer = PropertiesListSerializer(properties, many=True)
 
     return JsonResponse({
