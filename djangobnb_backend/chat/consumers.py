@@ -46,7 +46,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         )
 
-        await self.save_message(conversation_id, body, sent_to_id)
+        # await self.save_message(conversation_id, body, sent_to_id)
     
     # Sending messages
     async def chat_message(self, event):
